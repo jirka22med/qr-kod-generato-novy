@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Kód Generátor</title>
+     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+ :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .tab-container {
+            display: flex;
+            border-bottom: 2px solid var(--light-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            text-align: center;
+        }
+
+        .tab:hover {
+            color: var(--secondary-color);
+            text-align: center;
+        }
+
+        .tab.active {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+            text-align: center;
+        }
+
+        .tab-content {
+            display: none;
+            text-align: center;
+        }
+
+        .tab-content.active {
+            display: block;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            text-align: center;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="tel"],
+        input[type="email"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            text-align: center;
+        }
+
+        .row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            text-align: center;
+        }
+
+        .btn-accent:hover {
+            background-color: #c0392b;
+            text-align: center;
+        }
+
+        .options-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .option-group {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        #qrResult {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+
+        #qrcode {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #downloadBtn {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .history-item {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+        }
+
+        .history-item:hover {
+            border-color: var(--secondary-color);
+            background-color: rgba(52, 152, 219, 0.05);
+            text-align: center;
+        }
+
+        .history-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .history-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            text-align: center;
+        }
+
+        .history-data {
+            font-size: 0.9rem;
+            color: #777;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .history-qr {
+            width: 50px;
+            height: 50px;
+            margin-left: 1rem;
+            text-align: center;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .history-btn {
+            background-color: #f1f1f1;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .history-btn:hover {
+            background-color: #e0e0e0;
+            text-align: center;
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--accent-color);
+            text-align: center;
+        }
+
+        .history-empty {
+            text-align: center;
+            color: #777;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .blink {
+            animation: blink-animation 1s ease-in-out;
+            text-align: center;
+        }
+
+        @keyframes blink-animation {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+            
+        }
+
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+    </style>
+</head>
+     
+   <h1>QR Kód Generátor</h1>
+        <h2>Vytvoř QR kód pro libovolný typ informace</h2>
+     
+
+    <div class="container">
+        <div class="tab-container">
+            <div class="tab active" data-tab="url">URL</div>
+            <div class="tab" data-tab="text">Text</div>
+            <div class="tab" data-tab="contact">Kontakt</div>
+            <div class="tab" data-tab="wifi">WiFi</div>
+            <div class="tab" data-tab="email">E-mail</div>
+            <div class="tab" data-tab="phone">Telefon</div>
+            <div class="tab" data-tab="sms">SMS</div>
+            <div class="tab" data-tab="history">Historie</div>
+        </div>
+
+        <!-- URL Tab -->
+        <div class="tab-content active" id="url-tab">
+            <div class="form-group">
+                <label for="urlInput">Zadej URL adresu</label>
+                <input type="url" id="urlInput" placeholder="https://www.example.com" value="https://www.example.com">
+            </div>
+            <button class="btn btn-block" onclick="generateQR('url')">Generovat QR kód</button>
+        </div>
+
+        <!-- Text Tab -->
+        <div class="tab-content" id="text-tab">
+            <div class="form-group">
+                <label for="textInput">Zadej text</label>
+                <textarea id="textInput" rows="5" placeholder="Zde napiš svůj text..."></textarea>
+            </div>
+            <button class="btn btn-block" onclick="generateQR('text')">Generovat QR kód</button>
+        </div>
+
+        <!-- Contact Tab -->
+        <div class="tab-content" id="contact-tab">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="contactName">Jméno</label>
+                        <input type="text" id="contactName" placeholder="Jan Novák">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="contactOrg">Organizace (volitelné)</label>
+                        <input type="text" id="contactOrg" placeholder="Firma s.r.o.">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="contactPhone">Telefon</label>
+                        <input type="tel" id="contactPhone" placeholder="+420 123 456 789">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="contactEmail">E-mail</label>
+                        <input type="email" id="contactEmail" placeholder="jan.novak@example.com">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="contactAddress">Adresa (volitelné)</label>
+                <input type="text" id="contactAddress" placeholder="Dlouhá 123, Praha 1, 110 00">
+            </div>
+            <div class="form-group">
+                <label for="contactWeb">Web (volitelné)</label>
+                <input type="url" id="contactWeb" placeholder="https://www.example.com">
+            </div>
+            <button class="btn btn-block" onclick="generateQR('contact')">Generovat QR kód</button>
+        </div>
+
+        <!-- WiFi Tab -->
+        <div class="tab-content" id="wifi-tab">
+            <div class="form-group">
+                <label for="wifiName">Název sítě (SSID)</label>
+                <input type="text" id="wifiName" placeholder="MojeWiFi">
+            </div>
+            <div class="form-group">
+    <label for="wifiType">Typ zabezpečení</label>
+    <select id="wifiType">
+        <option value="WPA2">WPA2-Personal</option>
+        <option value="WPA">WPA-Personal</option>
+        <option value="WPA3">WPA3-Personal</option>
+        <option value="WPA2-EAP">WPA2-Enterprise (EAP)</option>
+        <option value="WPA3-EAP">WPA3-Enterprise (EAP)</option>
+        <option value="WEP">WEP</option>
+        <option value="nopass">Bez zabezpečení</option>
+    </select>
+</div>
+            <!-- Rozšířená sekce pro Enterprise autentizaci (zobrazí se jen když je vybrán WPA2-EAP nebo WPA3-EAP) -->
+<div id="enterpriseSettings" style="display: none;">
+    <div class="form-group">
+        <label for="eapMethod">EAP Metoda</label>
+        <select id="eapMethod">
+            <option value="PEAP">PEAP (MS-CHAPv2)</option>
+            <option value="TLS">TLS</option>
+            <option value="TTLS">TTLS</option>
+            <option value="PWD">PWD</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="identity">Identita (uživatelské jméno)</label>
+        <input type="text" id="identity" placeholder="uzivatel@domena.cz">
+    </div>
+    <div class="form-group">
+        <label for="anonymousIdentity">Anonymní identita (volitelné)</label>
+        <input type="text" id="anonymousIdentity" placeholder="anonymous@domena.cz">
+    </div>
+</div>
+            <div class="form-group wifi-password">
+                <label for="wifiPassword">Heslo</label>
+                <input type="text" id="wifiPassword" placeholder="Zadej heslo k WiFi">
+            </div>
+            <div class="form-group">
+                <label for="wifiHidden">Skrytá síť</label>
+                <select id="wifiHidden">
+                    <option value="false">Ne</option>
+                    <option value="true">Ano</option>
+                </select>
+            </div>
+            <button class="btn btn-block" onclick="generateQR('wifi')">Generovat QR kód</button>
+        </div>
+
+        <!-- Email Tab -->
+        <div class="tab-content" id="email-tab">
+            <div class="form-group">
+                <label for="emailAddress">E-mailová adresa</label>
+                <input type="email" id="emailAddress" placeholder="info@example.com">
+            </div>
+            <div class="form-group">
+                <label for="emailSubject">Předmět (volitelné)</label>
+                <input type="text" id="emailSubject" placeholder="Předmět e-mailu">
+            </div>
+            <div class="form-group">
+                <label for="emailBody">Obsah zprávy (volitelné)</label>
+                <textarea id="emailBody" rows="5" placeholder="Text zprávy..."></textarea>
+            </div>
+            <button class="btn btn-block" onclick="generateQR('email')">Generovat QR kód</button>
+        </div>
+
+        <!-- Phone Tab -->
+<div class="tab-content" id="phone-tab">
+    <div class="form-group">
+        <label for="phoneContactName">Jméno kontaktu</label>
+        <input type="text" id="phoneContactName" placeholder="Jan Novák">
+    </div>
+    <div class="form-group">
+        <label for="phoneContactEmail">Email</label>
+        <input type="email" id="phoneContactEmail" placeholder="jan.novak@email.cz">
+    </div>
+    <div class="form-group">
+        <label for="phoneNumber">Telefonní číslo</label>
+        <input type="tel" id="phoneNumber" placeholder="+420 123 456 789">
+    </div>
+    <button class="btn btn-block" onclick="generateQR('phone')">Generovat QR kód</button>
+</div>
+
+        <!-- SMS Tab -->
+        <div class="tab-content" id="sms-tab">
+            <div class="form-group">
+                <label for="smsNumber">Telefonní číslo</label>
+                <input type="tel" id="smsNumber" placeholder="+420 123 456 789">
+            </div>
+            <div class="form-group">
+                <label for="smsMessage">Text zprávy (volitelné)</label>
+                <textarea id="smsMessage" rows="5" placeholder="Text SMS zprávy..."></textarea>
+            </div>
+            <button class="btn btn-block" onclick="generateQR('sms')">Generovat QR kód</button>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content" id="history-tab">
+            <div id="historyList">
+                <div class="history-empty">Historie je prázdná</div>
+            </div>
+        </div>
+
+        <div id="qrResult" style="display: none;">
+            <div class="options-container">
+                <div class="option-group">
+                    <div class="form-group">
+                        <label for="qrSize">Velikost</label>
+                        <select id="qrSize" onchange="updateQR()">
+                            <option value="128">128x128 px</option>
+                            <option value="200">200x200 px</option>
+                            <option value="256" selected>256x256 px</option>
+                            <option value="320">320x320 px</option>
+                            <option value="400">400x400 px</option>
+                            <option value="512">512x512 px</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <div class="form-group">
+                        <label for="qrCorrection">Úroveň korekce</label>
+                        <select id="qrCorrection" onchange="updateQR()">
+                            <option value="L">Nízká (7%)</option>
+                            <option value="M" selected>Střední (15%)</option>
+                            <option value="Q">Kvartil (25%)</option>
+                            <option value="H">Vysoká (30%)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <div class="form-group">
+                        <label for="qrDarkColor">Barva QR kódu</label>
+                        <div class="color-picker">
+                            <div class="color-preview" id="darkColorPreview" style="background-color: #000000;"></div>
+                            <input type="color" id="qrDarkColor" value="#000000" onchange="updateColorPreview('qrDarkColor', 'darkColorPreview'); updateQR();">
+                        </div>
+                    </div>
+                </div>
+                <div class="option-group">
+                    <div class="form-group">
+                        <label for="qrLightColor">Barva pozadí</label>
+                        <div class="color-picker">
+                            <div class="color-preview" id="lightColorPreview" style="background-color: #FFFFFF;"></div>
+                            <input type="color" id="qrLightColor" value="#FFFFFF" onchange="updateColorPreview('qrLightColor', 'lightColorPreview'); updateQR();">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="qrcode"></div>
+            
+            <button id="downloadBtn" class="btn" onclick="downloadQR()">Stáhnout QR kód</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>QR Kód Generátor &copy; 2025</p>
+    </footer>
+
+     <script>
+ // Globální proměnné
+let currentQrType = '';
+let currentQrData = '';
+let qrInstance = null;
+const history = loadHistory();
+
+// Event listenery pro taby
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        // Odstranit aktivní třídu ze všech tabů
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Přidat aktivní třídu na kliknutý tab
+        tab.classList.add('active');
+        const tabId = tab.getAttribute('data-tab') + '-tab';
+        document.getElementById(tabId).classList.add('active');
+        
+        // Pokud je to historie, načti ji
+        if (tab.getAttribute('data-tab') === 'history') {
+            renderHistory();
+        }
+    });
+});
+
+// Inicializace WiFi tab s rozšířeným zabezpečením 
+document.getElementById('wifiType').addEventListener('change', function() {
+    const passwordField = document.querySelector('.wifi-password');
+    const enterpriseSettings = document.getElementById('enterpriseSettings');
+    
+    // Zjistíme, zda je vybrán typ Enterprise
+    const isEnterprise = this.value === 'WPA2-EAP' || this.value === 'WPA3-EAP';
+    
+    // Nastavení zobrazení pole pro heslo
+    if (this.value === 'nopass') {
+        passwordField.style.display = 'none';
+    } else {
+        passwordField.style.display = 'block';
+        
+        // Změna popisku podle typu zabezpečení
+        const passwordLabel = passwordField.querySelector('label');
+        if (isEnterprise) {
+            passwordLabel.textContent = 'Heslo (pokud je vyžadováno)';
+        } else {
+            passwordLabel.textContent = 'Heslo';
+        }
+    }
+    
+    // Nastavení zobrazení enterprise nastavení
+    enterpriseSettings.style.display = isEnterprise ? 'block' : 'none';
+});
+
+// Aktualizovat náhled barvy
+function updateColorPreview(inputId, previewId) {
+    const color = document.getElementById(inputId).value;
+    document.getElementById(previewId).style.backgroundColor = color;
+}
+
+// Helper funkce pro správné kódování textu včetně diakritiky
+function encodeURIComponentUtf8(str) {
+    return encodeURIComponent(str).replace(/%20/g, ' ');
+}
+
+// Aktualizace generování WiFi QR kódu pro podporu enterprise nastavení
+function generateWifiQR() {
+    const ssid = document.getElementById('wifiName').value.trim();
+    const security = document.getElementById('wifiType').value;
+    const password = document.getElementById('wifiPassword').value;
+    const hidden = document.getElementById('wifiHidden').value;
+    
+    if (!ssid) {
+        alert('Prosím, zadej název WiFi sítě');
+        return null;
+    }
+    
+    // Kontrola hesla pro běžné sítě (ne Enterprise a ne otevřené)
+    if (security !== 'nopass' && !security.includes('EAP') && !password) {
+        alert('Prosím, zadej heslo k WiFi síti');
+        return null;
+    }
+    
+    let wifi = `WIFI:S:${encodeURIComponentUtf8(ssid)};T:${security};`;
+    
+    // Přidat heslo pokud je vyžadováno
+    if (security !== 'nopass' && password) {
+        wifi += `P:${encodeURIComponentUtf8(password)};`;
+    }
+    
+    // Přidat údaj o viditelnosti sítě
+    wifi += `H:${hidden};`;
+    
+    // Přidat enterprise údaje, pokud jsou relevantní
+    if (security === 'WPA2-EAP' || security === 'WPA3-EAP') {
+        const eapMethod = document.getElementById('eapMethod').value;
+        const identity = document.getElementById('identity').value.trim();
+        const anonymousId = document.getElementById('anonymousIdentity').value.trim();
+        
+        if (!identity) {
+            alert('Pro podnikové WiFi sítě je vyžadováno uživatelské jméno');
+            return null;
+        }
+        
+        wifi += `E:${eapMethod};`;
+        wifi += `I:${encodeURIComponentUtf8(identity)};`;
+        
+        if (anonymousId) {
+            wifi += `A:${encodeURIComponentUtf8(anonymousId)};`;
+        }
+    }
+    
+    wifi += ';';
+    return wifi;
+}
+
+// Přidáno: Kontrola velikosti dat před generováním QR kódu
+function checkDataSize(data) {
+    const dataLength = new TextEncoder().encode(data).length;
+    const correctionLevel = document.getElementById('qrCorrection').value;
+    
+    // Přibližné limity velikosti dat pro QR kód verze 40 (největší):
+    // L: ~2,953 bytů
+    // M: ~2,331 bytů
+    // Q: ~1,663 bytů
+    // H: ~1,273 bytů
+    
+    let warningShown = false;
+    
+    if ((correctionLevel === 'H' && dataLength > 1200) ||
+        (correctionLevel === 'Q' && dataLength > 1600) ||
+        (correctionLevel === 'M' && dataLength > 2300) ||
+        (correctionLevel === 'L' && dataLength > 2900)) {
+        
+        if (!confirm(`Varování: Data mají velikost ${dataLength} bajtů, což se blíží maximální kapacitě QR kódu s aktuální úrovní korekce. Chcete pokračovat?`)) {
+            return false;
+        }
+        warningShown = true;
+    }
+    
+    if (dataLength > 2900 && !warningShown) {
+        alert("Data jsou příliš velká pro QR kód. Maximální velikost je přibližně 2900 bajtů. Zkraťte vstupní text nebo ho rozdělte do více QR kódů.");
+        return false;
+    }
+    
+    return true;
+}
+
+// Generování QR kódu
+function generateQR(type) {
+    currentQrType = type;
+    let data = '';
+    let title = '';
+    
+    switch(type) {
+        case 'url':
+            const url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                alert('Prosím, zadej platnou URL adresu');
+                return;
+            }
+            // URL adresy musí začínat protokolem
+            data = url.startsWith('http') ? url : 'https://' + url;
+            title = 'URL: ' + url;
+            break;
+            
+        case 'text':
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                alert('Prosím, zadej nějaký text');
+                return;
+            }
+            // Text ponecháváme tak jak je, QR kód dokáže zakódovat UTF-8
+            data = text;
+            title = 'Text: ' + (text.length > 20 ? text.substring(0, 20) + '...' : text);
+            break;
+            
+        case 'contact':
+            const name = document.getElementById('contactName').value.trim();
+            const org = document.getElementById('contactOrg').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const address = document.getElementById('contactAddress').value.trim();
+            const web = document.getElementById('contactWeb').value.trim();
+            
+            if (!name || !phone) {
+                alert('Prosím, zadej alespoň jméno a telefon');
+                return;
+            }
+            
+            // vCard formát pro kontakt - používat přímo hodnoty bez kódování
+            let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
+            vcard += `N:${name.split(' ').pop()};${name.split(' ')[0]};;;\n`;
+            vcard += `FN:${name}\n`;
+            if (org) vcard += `ORG:${org}\n`;
+            if (phone) vcard += `TEL;TYPE=CELL:${phone}\n`;
+            if (email) vcard += `EMAIL:${email}\n`;
+            if (address) vcard += `ADR:;;${address};;;;\n`;
+            if (web) vcard += `URL:${web}\n`;
+            vcard += 'END:VCARD';
+            
+            data = vcard;
+            title = 'Kontakt: ' + name;
+            break;
+            
+        case 'wifi':
+            const wifiData = generateWifiQR();
+            if (!wifiData) return; // Pokud je null, generování se přeruší
+            
+            data = wifiData;
+            title = 'WiFi: ' + document.getElementById('wifiName').value.trim();
+            break;
+            
+        case 'email':
+            const emailAddress = document.getElementById('emailAddress').value.trim();
+            const subject = document.getElementById('emailSubject').value.trim();
+            const body = document.getElementById('emailBody').value.trim();
+            
+            if (!emailAddress) {
+                alert('Prosím, zadej e-mailovou adresu');
+                return;
+            }
+            
+            let mailtoUrl = `mailto:${emailAddress}`;
+            const params = [];
+            // Oprava kódování předmětu a těla e-mailu
+            if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+            if (body) params.push(`body=${encodeURIComponent(body)}`);
+            if (params.length > 0) mailtoUrl += '?' + params.join('&');
+            
+            data = mailtoUrl;
+            title = 'E-mail: ' + emailAddress;
+            break;
+            
+        case 'phone':
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const phoneContactName = document.getElementById('phoneContactName').value.trim();
+            const phoneContactEmail = document.getElementById('phoneContactEmail').value.trim();
+            
+            if (!phoneNumber) {
+                alert('Prosím, zadej telefonní číslo');
+                return;
+            }
+            
+            // Pokud jsou vyplněny i jméno nebo email, vytvoříme vCard formát
+            if (phoneContactName || phoneContactEmail) {
+                data = 'BEGIN:VCARD\n';
+                data += 'VERSION:3.0\n';
+                
+                if (phoneContactName) {
+                    data += `FN:${phoneContactName}\n`;
+                    data += `N:${phoneContactName};;;;\n`;
+                }
+                
+                data += `TEL;TYPE=CELL:${phoneNumber.replace(/\s/g, '')}\n`;
+                
+                if (phoneContactEmail) {
+                    data += `EMAIL:${phoneContactEmail}\n`;
+                }
+                
+                data += 'END:VCARD';
+                
+                // Sestavit název pro historii
+                title = phoneContactName ? 
+                        `Kontakt: ${phoneContactName} (${phoneNumber})` : 
+                        `Telefon: ${phoneNumber}`;
+            } else {
+                // Pouze telefonní číslo bez dodatečných informací
+                data = `tel:${phoneNumber.replace(/\s/g, '')}`;
+                title = 'Telefon: ' + phoneNumber;
+            }
+            break;
+            
+        case 'sms':
+            const smsNumber = document.getElementById('smsNumber').value.trim();
+            const smsMessage = document.getElementById('smsMessage').value.trim();
+            
+            if (!smsNumber) {
+                alert('Prosím, zadej telefonní číslo');
+                return;
+            }
+            
+            let smsUrl = `smsto:${smsNumber.replace(/\s/g, '')}`;
+            // Pro zprávu SMS je třeba správně kódovat text zprávy
+            if (smsMessage) smsUrl += `:${encodeURIComponentUtf8(smsMessage)}`;
+            
+            data = smsUrl;
+            title = 'SMS: ' + smsNumber;
+            break;
+    }
+    
+    if (data) {
+        // Přidáno: Kontrola velikosti dat před generováním QR kódu
+        if (!checkDataSize(data)) {
+            return; // Přerušit, pokud jsou data příliš velká
+        }
+        
+        currentQrData = data;
+        createQRCode(data);
+        saveToHistory(type, title, data);
+        document.getElementById('qrResult').style.display = 'flex';
+        
+        // Scrollování k výsledku
+        setTimeout(() => {
+            document.getElementById('qrResult').scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+}
+
+// Vytvoření QR kódu - NOVÁ VYLEPŠENÁ VERZE
+function createQRCode(data) {
+    // Vyčistit předchozí QR kód
+    const qrDiv = document.getElementById('qrcode');
+    qrDiv.innerHTML = '';
+    
+    // Nastavení parametrů
+    const size = parseInt(document.getElementById('qrSize').value);
+    let correction = document.getElementById('qrCorrection').value;
+    const darkColor = document.getElementById('qrDarkColor').value;
+    const lightColor = document.getElementById('qrLightColor').value;
+    
+    // Automaticky upravit úroveň korekce podle velikosti dat
+    const dataLength = new TextEncoder().encode(data).length;
+    
+    try {
+        // Vytvoření nového QR kódu - knihovna qrcodejs podporuje UTF-8
+        qrInstance = new QRCode(qrDiv, {
+            text: data,
+            width: size,
+            height: size,
+            colorDark: darkColor,
+            colorLight: lightColor,
+            correctLevel: QRCode.CorrectLevel[correction],
+            // Přidáno nastavení pro UTF-8
+            utf8: true
+        });
+        
+        // Efekt bliknutí
+        qrDiv.classList.add('blink');
+        setTimeout(() => {
+            qrDiv.classList.remove('blink');
+        }, 1000);
+        
+        // Zobrazit informaci o množství dat v QR kódu
+        console.log(`QR kód vygenerován, velikost dat: ${dataLength} bajtů, úroveň korekce: ${correction}`);
+    } catch (error) {
+        console.error("Chyba při generování QR kódu:", error);
+        
+        // Pokud se generování nezdařilo, zkusit znovu s nižší úrovní korekce
+        if (error.message && error.message.includes("code length overflow")) {
+            // Snížit úroveň korekce a zkusit znovu
+            let newCorrection;
+            switch(correction) {
+                case 'H': newCorrection = 'Q'; break;
+                
+               
+                    // Když ani L nestačí, zkrátit data
+                    alert("Data jsou příliš dlouhá pro QR kód. Zkraťte vstupní text nebo rozdělte obsah do více QR kódů.");
+                    return;
+            }
+            
+            console.log(`Automaticky snižuji úroveň korekce na ${newCorrection}`);
+            document.getElementById('qrCorrection').value = newCorrection;
+            
+            // Rekurzivně zavolat funkci znovu s novou úrovní korekce
+            createQRCode(data);
+        } else {
+            // Jiná chyba
+            alert("Nepodařilo se vygenerovat QR kód: " + error.message);
+        }
+    }
+}
+
+// Aktualizace QR kódu podle nastavení
+function updateQR() {
+    if (currentQrData) {
+        createQRCode(currentQrData);
+    }
+}
+
+// Stažení QR kódu
+function downloadQR() {
+    // Získat obrázek z QR kódu
+    const img = document.querySelector('#qrcode img');
+    if (!img) return;
+    
+    // Vytvořit odkaz pro stažení
+    const link = document.createElement('a');
+    // Přidáno generování názvu souboru s datem a typem
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    link.download = `qr-kod-${currentQrType}-${date}.png`;
+    link.href = img.src;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Práce s historií
+function saveToHistory(type, title, data) {
+    const timestamp = new Date().getTime();
+    const historyItem = {
+        id: timestamp,
+        type: type,
+        title: title,
+        data: data,
+        date: new Date().toLocaleString('cs-CZ')
+    };
+    
+    history.unshift(historyItem);
+    
+    // Omezení na posledních 20 položek
+    if (history.length > 20) {
+        history.pop();
+    }
+    
+    // Uložení do localStorage
+    localStorage.setItem('qrGeneratorHistory', JSON.stringify(history));
+}
+
+function loadHistory() {
+    const saved = localStorage.getItem('qrGeneratorHistory');
+    return saved ? JSON.parse(saved) : [];
+}
+
+function renderHistory() {
+    const historyList = document.getElementById('historyList');
+    
+    if (history.length === 0) {
+        historyList.innerHTML = '<div class="history-empty">Historie je prázdná</div>';
+        return;
+    }
+    
+    let html = '';
+    history.forEach(item => {
+        html += `
+            <div class="history-item" data-id="${item.id}">
+                <div class="history-content" onclick="loadHistoryItem(${item.id})">
+                    <div class="history-title">${item.title}</div>
+                    <div class="history-date">${item.date}</div>
+                </div>
+                <div class="history-actions">
+                    <button class="history-btn delete-btn" onclick="deleteHistoryItem(${item.id}, event)" title="Smazat">✕</button>
+                </div>
+            </div>
+        `;
+    });
+    
+    historyList.innerHTML = html;
+}
+
+function loadHistoryItem(id) {
+    const item = history.find(h => h.id === id);
+    if (!item) return;
+    
+    // Přepnout na správný tab
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    const tabElement = document.querySelector(`.tab[data-tab="${item.type}"]`);
+    const contentElement = document.getElementById(`${item.type}-tab`);
+    
+    if (tabElement && contentElement) {
+        tabElement.classList.add('active');
+        contentElement.classList.add('active');
+        
+        // Vyplnit formulář podle typu položky
+        switch(item.type) {
+            case 'url':
+                document.getElementById('urlInput').value = item.data.startsWith('http') ? item.data : item.data.replace('https://', '');
+                break;
+                
+            case 'text':
+                document.getElementById('textInput').value = item.data;
+                break;
+                
+            case 'contact':
+                // Parsování vCard - opraveno pro lepší podporu diakritiky
+                const vcard = item.data;
+                const getName = (vcard) => {
+                    const match = vcard.match(/FN:(.*?)(\n|$)/);
+                    return match ? match[1] : '';
+                };
+                const getOrg = (vcard) => {
+                    const match = vcard.match(/ORG:(.*?)(\n|$)/);
+                    return match ? match[1] : '';
+                };
+                const getPhone = (vcard) => {
+                    const match = vcard.match(/TEL;TYPE=CELL:(.*?)(\n|$)/);
+                    return match ? match[1] : '';
+                };
+                const getEmail = (vcard) => {
+                    const match = vcard.match(/EMAIL:(.*?)(\n|$)/);
+                    return match ? match[1] : '';
+                };
+                const getAddress = (vcard) => {
+                    const match = vcard.match(/ADR:;;(.*?);;;/);
+                    return match ? match[1] : '';
+                };
+                const getWeb = (vcard) => {
+                    const match = vcard.match(/URL:(.*?)(\n|$)/);
+                    return match ? match[1] : '';
+                };
+                
+                document.getElementById('contactName').value = getName(vcard);
+                document.getElementById('contactOrg').value = getOrg(vcard);
+                document.getElementById('contactPhone').value = getPhone(vcard);
+                document.getElementById('contactEmail').value = getEmail(vcard);
+                document.getElementById('contactAddress').value = getAddress(vcard);
+                document.getElementById('contactWeb').value = getWeb(vcard);
+                break;
+                
+            case 'wifi':
+                // Parsování WiFi - opraveno pro podporu diakritiky
+                const wifi = item.data;
+                const getSsid = (wifi) => {
+                    const match = wifi.match(/S:(.*?);/);
+                    return match ? decodeURIComponent(match[1].replace(/ /g, '%20')) : '';
+                };
+                const getSecurity = (wifi) => {
+                    const match = wifi.match(/T:(.*?);/);
+                    return match ? match[1] : 'WPA';
+                };
+                const getWifiPassword = (wifi) => {
+                    const match = wifi.match(/P:(.*?);/);
+                    return match ? decodeURIComponent(match[1].replace(/ /g, '%20')) : '';
+                };
+                const getHidden = (wifi) => {
+                    const match = wifi.match(/H:(.*?);/);
+                    return match ? match[1] : 'false';
+                };
+                
+                document.getElementById('wifiName').value = getSsid(wifi);
+                document.getElementById('wifiType').value = getSecurity(wifi);
+                document.getElementById('wifiPassword').value = getWifiPassword(wifi);
+                document.getElementById('wifiHidden').value = getHidden(wifi);
+                
+                // Zobrazit/skrýt pole pro heslo podle typu zabezpečení
+                const passwordField = document.querySelector('.wifi-password');
+                if (getSecurity(wifi) === 'nopass') {
+                    passwordField.style.display = 'none';
+                } else {
+                    passwordField.style.display = 'block';
+                }
+                break;
+                
+            case 'email':
+                // Parsování mailto URL - opraveno pro lepší podporu diakritiky
+                const email = item.data;
+                const getEmailAddress = (email) => {
+                    const match = email.match(/mailto:(.*?)($|\?)/);
+                    return match ? match[1] : '';
+                };
+                const getSubject = (email) => {
+                    const match = email.match(/[?&]subject=([^&]*)/);
+                    return match ? decodeURIComponent(match[1]) : '';
+                };
+                const getBody = (email) => {
+                    const match = email.match(/[?&]body=([^&]*)/);
+                    return match ? decodeURIComponent(match[1]) : '';
+                };
+                
+                document.getElementById('emailAddress').value = getEmailAddress(email);
+                document.getElementById('emailSubject').value = getSubject(email);
+                document.getElementById('emailBody').value = getBody(email);
+                break;
+                
+            case 'phone':
+                // Parsování tel: URL nebo vCard
+                const phone = item.data;
+                
+                if (phone.startsWith('BEGIN:VCARD')) {
+                    // Je to vCard, extrahuj data
+                    const getName = (vcard) => {
+                        const match = vcard.match(/FN:(.*?)(\n|$)/);
+                        return match ? match[1] : '';
+                    };
+                    const getPhone = (vcard) => {
+                        const match = vcard.match(/TEL;TYPE=CELL:(.*?)(\n|$)/);
+                        return match ? match[1] : '';
+                    };
+                    const getEmail = (vcard) => {
+                        const match = vcard.match(/EMAIL:(.*?)(\n|$)/);
+                        return match ? match[1] : '';
+                    };
+                    
+                    document.getElementById('phoneNumber').value = getPhone(phone);
+                    document.getElementById('phoneContactName').value = getName(phone);
+                    document.getElementById('phoneContactEmail').value = getEmail(phone);
+                } else {
+                    // Je to tel: URL
+                    document.getElementById('phoneNumber').value = phone.replace('tel:', '');
+                    document.getElementById('phoneContactName').value = '';
+                    document.getElementById('phoneContactEmail').value = '';
+                }
+                break;
+                
+            case 'sms':
+                // Parsování sms: URL - opraveno pro lepší podporu diakritiky
+                const sms = item.data;
+                const getSmsNumber = (sms) => {
+                    const match = sms.match(/smsto:(.*?)($|:)/);
+                    return match ? match[1] : '';
+                };
+                const getSmsMessage = (sms) => {
+                    const match = sms.match(/smsto:.*?:(.*)/);
+                    return match ? decodeURIComponent(match[1].replace(/ /g, '%20')) : '';
+                };
+                
+                document.getElementById('smsNumber').value = getSmsNumber(sms);
+                document.getElementById('smsMessage').value = getSmsMessage(sms);
+                break;
+        }
+        
+        // Vygenerovat QR kód
+        currentQrType = item.type;
+        currentQrData = item.data;
+        createQRCode(item.data);
+        document.getElementById('qrResult').style.display = 'flex';
+        
+        // Scrollování k výsledku
+        setTimeout(() => {
+            document.getElementById('qrResult').scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+    }
+}
+
+function deleteHistoryItem(id, event) {
+    // Zastavit propagaci události, aby se nekliknulo na celou položku
+    event.stopPropagation();
+    
+    // Najít index položky v historii
+    const index = history.findIndex(h => h.id === id);
+    if (index === -1) return;
+    
+    // Smazat položku
+    history.splice(index, 1);
+    
+    // Uložit aktualizovanou historii
+    localStorage.setItem('qrGeneratorHistory', JSON.stringify(history));
+    
+    // Překreslit seznam historie
+    renderHistory();
+}
+
+// Inicializace aplikace
+document.addEventListener('DOMContentLoaded', () => {
+    // Nastavit výchozí velikost QR kódu
+    document.getElementById('qrSize').value = '400';
+    
+    // Nastavit výchozí úroveň korekce
+    document.getElementById('qrCorrection').value = 'H';
+    
+    // Nastavit výchozí barvy
+    document.getElementById('qrDarkColor').value = '#000000';
+    document.getElementById('qrLightColor').value = '#FFFFFF';
+    
+    // Aktualizovat náhledy barev
+    updateColorPreview('qrDarkColor', 'darkColorPreview');
+    updateColorPreview('qrLightColor', 'lightColorPreview');
+    
+    // Kontrola, jestli předvyplnit URL
+    const urlInput = document.getElementById('urlInput');
+    if (urlInput.value === 'https://www.example.com') {
+        urlInput.select();
+    }
+    
+    // Kontrola, jestli byla přidána nová položka historie
+    if (history.length > 0) {
+        // Zvýraznit tlačítko historie
+        const historyTab = document.querySelector('.tab[data-tab="history"]');
+        if (historyTab) {
+            historyTab.classList.add('blink');
+            setTimeout(() => {
+                historyTab.classList.remove('blink');
+            }, 2000);
+        }
+    }
+});
+
+// Inicializace generování QR při stisknutí Enter v polích
+document.querySelectorAll('input, textarea').forEach(input => {
+    input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            // Najít správný tab a generovat QR kód
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab) {
+                const type = activeTab.id.replace('-tab', '');
+                generateQR(type);
+            }
+        }
+    });
+});
+    </script>
+
+</body>
+</html>
